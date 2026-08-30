@@ -81,20 +81,6 @@ export default function UploadPhoto({ onNewSubmission }) {
           {result.maskSignedUrl && (
             <img src={result.maskSignedUrl} alt="Segmentation overlay" className="w-48 h-48 object-cover rounded-lg mb-3 border" />
           )}
-
-          {result.color_distribution && (
-            <>
-              <p className="text-sm font-medium mb-1">Tissue color breakdown:</p>
-              <ul className="text-sm space-y-1">
-                {Object.entries(result.color_distribution).map(([name, percent]) => (
-                  <li key={name} className="flex justify-between capitalize">
-                    <span>{name}</span>
-                    <span>{percent}%</span>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
         </div>
       )}
     </Card>

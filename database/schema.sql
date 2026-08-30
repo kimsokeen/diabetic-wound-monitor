@@ -1,7 +1,16 @@
 -- ============================================================
 -- Diabetic Ulcer Monitoring App — Supabase Schema
 -- Run this in the Supabase SQL Editor (Project > SQL Editor > New query)
+--
+-- Structure: all TABLES are created first, then all SECURITY POLICIES.
+-- This matters because several policies reference other tables (e.g. a
+-- policy on "profiles" checks "caregiver_links") — those tables must
+-- already exist before a policy can reference them.
 -- ============================================================
+
+-- ------------------------------------------------------------
+-- PART 1: TABLES
+-- ------------------------------------------------------------
 
 -- 1. PROFILES
 -- Extends Supabase's built-in auth.users with app-specific info.
@@ -17,6 +26,54 @@ create table public.profiles (
 );
 
 alter table public.profiles enable row level security;
+
+-- 2. CAREGIVER LINKS
+-- Created once a caregiver successfully enters a patient's ID + passkey.
+-- After that, the caregiver doesn't need to re-enter it.
+create table public.caregiver_links (
+  id uuid primary key default gen_random_uuid(),
+  caregiver_id uuid not null references public.profiles(id) on delete cascade,
+  patient_id uuid not null references public.profiles(id) on delete cascade,
+  linked_at timestamptz not null default now(),
+  unique (caregiver_id, patient_id)
+);
+
+alter table public.caregiver_links enable row level security;
+
+-- 3. SUBMISSIONS
+-- One row per photo a patient uploads, with the model's results.
+create table public.submissions (
+  id uuid primary key default gen_random_uuid(),
+  patient_id uuid not null references public.profiles(id) on delete cascade,
+  image_url text not null,          -- path in Supabase Storage
+  mask_url text,                    -- path to the segmentation overlay image
+  wound_area_px integer,            -- raw pixel count of wound region
+  wound_area_percent numeric(6,3),  -- % of total image area covered by wound
+  created_at timestamptz not null default now()
+);
+
+alter table public.submissions enable row level security;
+
+-- 4. MESSAGES
+-- Simple 1:1 chat between a patient and a caregiver.
+create table public.messages (
+  id uuid primary key default gen_random_uuid(),
+  patient_id uuid not null references public.profiles(id) on delete cascade,
+  caregiver_id uuid not null references public.profiles(id) on delete cascade,
+  sender_id uuid not null references public.profiles(id) on delete cascade,
+  content text not null,
+  created_at timestamptz not null default now(),
+  read_at timestamptz
+);
+
+alter table public.messages enable row level security;
+
+-- ------------------------------------------------------------
+-- PART 2: SECURITY POLICIES (Row Level Security)
+-- All four tables above now exist, so policies can safely reference any of them.
+-- ------------------------------------------------------------
+
+-- --- profiles policies ---
 
 -- A user can always see and edit their own profile.
 create policy "Users can view own profile"
@@ -51,18 +108,7 @@ create policy "Patients can view linked caregivers"
     )
   );
 
--- 2. CAREGIVER LINKS
--- Created once a caregiver successfully enters a patient's ID + passkey.
--- After that, the caregiver doesn't need to re-enter it.
-create table public.caregiver_links (
-  id uuid primary key default gen_random_uuid(),
-  caregiver_id uuid not null references public.profiles(id) on delete cascade,
-  patient_id uuid not null references public.profiles(id) on delete cascade,
-  linked_at timestamptz not null default now(),
-  unique (caregiver_id, patient_id)
-);
-
-alter table public.caregiver_links enable row level security;
+-- --- caregiver_links policies ---
 
 create policy "Caregivers can view their own links"
   on public.caregiver_links for select
@@ -76,20 +122,7 @@ create policy "Patients can view who's linked to them"
   on public.caregiver_links for select
   using (auth.uid() = patient_id);
 
--- 3. SUBMISSIONS
--- One row per photo a patient uploads, with the model's results.
-create table public.submissions (
-  id uuid primary key default gen_random_uuid(),
-  patient_id uuid not null references public.profiles(id) on delete cascade,
-  image_url text not null,          -- path in Supabase Storage
-  mask_url text,                    -- path to the segmentation overlay image
-  wound_area_px integer,            -- raw pixel count of wound region
-  wound_area_percent numeric(6,3),  -- % of total image area covered by wound
-  color_distribution jsonb,         -- e.g. {"granulation": 62.5, "slough": 30.1, "necrotic": 7.4}
-  created_at timestamptz not null default now()
-);
-
-alter table public.submissions enable row level security;
+-- --- submissions policies ---
 
 create policy "Patients can view own submissions"
   on public.submissions for select
@@ -109,19 +142,7 @@ create policy "Linked caregivers can view patient submissions"
     )
   );
 
--- 4. MESSAGES
--- Simple 1:1 chat between a patient and a caregiver.
-create table public.messages (
-  id uuid primary key default gen_random_uuid(),
-  patient_id uuid not null references public.profiles(id) on delete cascade,
-  caregiver_id uuid not null references public.profiles(id) on delete cascade,
-  sender_id uuid not null references public.profiles(id) on delete cascade,
-  content text not null,
-  created_at timestamptz not null default now(),
-  read_at timestamptz
-);
-
-alter table public.messages enable row level security;
+-- --- messages policies ---
 
 create policy "Participants can view their messages"
   on public.messages for select
@@ -133,6 +154,10 @@ create policy "Participants can send messages"
     (auth.uid() = patient_id or auth.uid() = caregiver_id)
     and auth.uid() = sender_id
   );
+
+-- ------------------------------------------------------------
+-- PART 3: FUNCTIONS & TRIGGERS
+-- ------------------------------------------------------------
 
 -- 5. AUTO-CREATE PROFILE + PASSKEY ON SIGNUP
 -- Reads role/full_name out of the signup metadata (see frontend signup code)
@@ -203,8 +228,11 @@ $$;
 revoke execute on function public.link_patient_by_passkey(uuid, text) from public;
 grant execute on function public.link_patient_by_passkey(uuid, text) to authenticated;
 
+-- ------------------------------------------------------------
+-- PART 4: STORAGE
+-- ------------------------------------------------------------
+
 -- 7. STORAGE BUCKET for wound photos
--- (Run this part too — creates a private bucket; access controlled via signed URLs)
 insert into storage.buckets (id, name, public)
 values ('wound-photos', 'wound-photos', false)
 on conflict (id) do nothing;
@@ -233,6 +261,10 @@ create policy "Linked caregivers can view patient photos"
       and cl.patient_id::text = (storage.foldername(name))[1]
     )
   );
+
+-- ------------------------------------------------------------
+-- PART 5: REALTIME
+-- ------------------------------------------------------------
 
 -- 8. ENABLE REALTIME on messages (for live chat updates)
 alter publication supabase_realtime add table public.messages;

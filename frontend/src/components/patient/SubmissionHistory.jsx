@@ -52,14 +52,6 @@ export default function SubmissionHistory({ patientId, refreshKey }) {
               {new Date(s.created_at).toLocaleString()}
             </p>
             <p className="font-medium">Wound area: {s.wound_area_percent}%</p>
-            <div className="flex flex-wrap gap-2 mt-1">
-              {s.color_distribution &&
-                Object.entries(s.color_distribution).map(([name, percent]) => (
-                  <span key={name} className="text-xs bg-slate-100 rounded-full px-2 py-1 capitalize">
-                    {name}: {percent}%
-                  </span>
-                ))}
-            </div>
           </div>
         </Card>
       ))}

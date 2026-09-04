@@ -25,7 +25,7 @@ export default function PatientList({ caregiverId, selectedPatientId, onSelect, 
 
   if (loading) return <Spinner />
   if (patients.length === 0) {
-    return <p className="text-sm text-slate-500">No patients linked yet — add one above.</p>
+    return <p className="text-sm text-ink/50">No patients linked yet — add one above.</p>
   }
 
   return (
@@ -35,7 +35,7 @@ export default function PatientList({ caregiverId, selectedPatientId, onSelect, 
           key={p.patient_id}
           onClick={() => onSelect(p.patient_id, p.profiles?.full_name)}
           className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
-            selectedPatientId === p.patient_id ? 'bg-brand-100 text-brand-700' : 'hover:bg-slate-100'
+            selectedPatientId === p.patient_id ? 'bg-brand-100 text-brand-700' : 'hover:bg-paper'
           }`}
         >
           {p.profiles?.full_name || 'Unnamed patient'}

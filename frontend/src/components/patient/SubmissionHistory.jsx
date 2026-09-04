@@ -38,7 +38,7 @@ export default function SubmissionHistory({ patientId, refreshKey }) {
   }
 
   if (loading) return <Spinner />
-  if (submissions.length === 0) return <p className="text-slate-500 text-sm">No submissions yet.</p>
+  if (submissions.length === 0) return <p className="text-ink/50 text-sm">No submissions yet.</p>
 
   return (
     <div className="space-y-4">
@@ -48,7 +48,7 @@ export default function SubmissionHistory({ patientId, refreshKey }) {
             <img src={s.imageSignedUrl} alt="Wound" className="w-24 h-24 object-cover rounded-lg border flex-shrink-0" />
           )}
           <div className="flex-1">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-ink/50">
               {new Date(s.created_at).toLocaleString()}
             </p>
             <p className="font-medium">Wound area: {s.wound_area_percent}%</p>

@@ -36,7 +36,7 @@ export default function AuthPage() {
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center">
           <h2 className="text-xl font-semibold mb-2">Check your email</h2>
-          <p className="text-slate-600 mb-4">
+          <p className="text-ink/60 mb-4">
             We sent a confirmation link to <strong>{email}</strong>. Click it, then come back and log in.
           </p>
           <Button onClick={() => { setSignupDone(false); setMode('login') }}>Back to login</Button>
@@ -48,15 +48,15 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="max-w-md w-full">
-        <h1 className="text-2xl font-bold mb-1">Diabetic Ulcer Monitoring</h1>
-        <p className="text-slate-500 mb-6">{mode === 'login' ? 'Log in to your account' : 'Create an account'}</p>
+        <h1 className="font-display text-2xl text-ink mb-1">Diabetic Ulcer Monitoring</h1>
+        <p className="text-ink/50 mb-6">{mode === 'login' ? 'Log in to your account' : 'Create an account'}</p>
 
         <form onSubmit={handleSubmit}>
           {mode === 'signup' && (
             <>
               <Input label="Full name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
               <label className="block mb-4">
-                <span className="block text-sm font-medium text-slate-700 mb-1">I am a...</span>
+                <span className="block text-sm font-medium text-ink/80 mb-1">I am a...</span>
                 <div className="flex gap-3">
                   {['patient', 'caregiver'].map((r) => (
                     <button
@@ -64,7 +64,7 @@ export default function AuthPage() {
                       key={r}
                       onClick={() => setRole(r)}
                       className={`flex-1 py-2 rounded-lg border capitalize ${
-                        role === r ? 'bg-brand-600 text-white border-brand-600' : 'border-slate-300 text-slate-700'
+                        role === r ? 'bg-brand-600 text-white border-brand-600' : 'border-line text-ink/80'
                       }`}
                     >
                       {r}
@@ -98,7 +98,7 @@ export default function AuthPage() {
           </Button>
         </form>
 
-        <p className="text-sm text-slate-500 mt-4 text-center">
+        <p className="text-sm text-ink/50 mt-4 text-center">
           {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
           <button
             className="text-brand-600 font-medium"

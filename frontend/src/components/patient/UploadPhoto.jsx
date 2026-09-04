@@ -1,8 +1,20 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { X, RotateCcw } from 'lucide-react'
 import { supabase, BACKEND_URL, getSignedImageUrl } from '../../lib/supabaseClient'
-import { Button, Card, ErrorText, Spinner } from '../shared/UI'
+import { Button, Card } from '../shared/UI'
 import HeroVideoDialog from '../shared/HeroVideoDialog'
+import Dropzone from '../shared/Dropzone'
+import {
+  Attachment,
+  AttachmentMedia,
+  AttachmentContent,
+  AttachmentTitle,
+  AttachmentDescription,
+  AttachmentActions,
+  AttachmentAction,
+  formatFileSize,
+} from '../shared/Attachment'
 
 // Mayo Clinic's short, credible foot-care video — shown after analysis to
 // help patients reduce their risk of the wound worsening.
@@ -15,11 +27,16 @@ export default function UploadPhoto({ onNewSubmission }) {
   const [error, setError] = useState('')
   const [result, setResult] = useState(null)
 
-  function handleFileChange(e) {
-    const selected = e.target.files[0]
-    if (!selected) return
+  function handleFileSelected(selected) {
     setFile(selected)
     setPreview(URL.createObjectURL(selected))
+    setResult(null)
+    setError('')
+  }
+
+  function reset() {
+    setFile(null)
+    setPreview(null)
     setResult(null)
     setError('')
   }
@@ -59,38 +76,66 @@ export default function UploadPhoto({ onNewSubmission }) {
     }
   }
 
+  // Map our app state onto the Attachment component's state prop.
+  const attachmentState = error ? 'error' : loading ? 'uploading' : result ? 'done' : 'idle'
+
   return (
     <Card>
-      <h2 className="text-lg font-semibold mb-4">Upload a wound photo</h2>
+      <h2 className="font-display text-xl text-ink mb-4">Upload a wound photo</h2>
 
-      <input type="file" accept="image/*" onChange={handleFileChange} className="mb-4" />
+      {!file && <Dropzone onFileSelected={handleFileSelected} />}
 
-      {preview && (
-        <img src={preview} alt="Preview" className="w-48 h-48 object-cover rounded-lg mb-4 border" />
+      {file && (
+        <Attachment state={attachmentState}>
+          <AttachmentMedia variant="image">
+            <img src={preview} alt="Selected wound photo" className="w-full h-full object-cover" />
+          </AttachmentMedia>
+
+          <AttachmentContent>
+            <AttachmentTitle>{file.name}</AttachmentTitle>
+            <AttachmentDescription tone={error ? 'error' : result ? 'brand' : 'default'}>
+              {error
+                ? error
+                : loading
+                ? 'Analyzing...'
+                : result
+                ? 'Analysis complete'
+                : formatFileSize(file.size)}
+            </AttachmentDescription>
+          </AttachmentContent>
+
+          <AttachmentActions>
+            {!loading && (
+              <AttachmentAction aria-label="Remove photo" onClick={reset}>
+                {result || error ? <RotateCcw size={14} /> : <X size={14} />}
+              </AttachmentAction>
+            )}
+          </AttachmentActions>
+        </Attachment>
       )}
 
-      <ErrorText>{error}</ErrorText>
-
-      <Button onClick={handleUpload} disabled={!file || loading}>
-        {loading ? 'Analyzing...' : 'Analyze photo'}
-      </Button>
-
-      {loading && <Spinner />}
+      {file && !result && (
+        <Button onClick={handleUpload} disabled={loading} className="mt-4">
+          {loading ? 'Analyzing...' : 'Analyze photo'}
+        </Button>
+      )}
 
       {result && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="mt-6 p-4 bg-slate-50 rounded-lg border"
+          className="mt-6 pt-6 border-t border-line"
         >
-          <h3 className="font-medium mb-2">Results</h3>
-          <p className="text-sm mb-2">
-            Wound area: <strong>{result.wound_area_percent}%</strong> of the photo
-          </p>
+          <p className="text-xs uppercase tracking-wide text-ink/40 mb-1">Wound area</p>
+          <p className="font-display text-4xl text-clay-600 mb-4">{result.wound_area_percent}%</p>
 
           {result.maskSignedUrl && (
-            <img src={result.maskSignedUrl} alt="Segmentation overlay" className="w-48 h-48 object-cover rounded-lg mb-4 border" />
+            <img
+              src={result.maskSignedUrl}
+              alt="Segmentation overlay"
+              className="w-48 h-48 object-cover rounded-lg mb-5 border border-line"
+            />
           )}
 
           <HeroVideoDialog

@@ -36,7 +36,7 @@ export default function PatientSearch({ onLinked }) {
   return (
     <Card>
       <h2 className="text-lg font-semibold mb-1">Add a patient</h2>
-      <p className="text-sm text-slate-500 mb-4">
+      <p className="text-sm text-ink/50 mb-4">
         Ask your patient for their ID and passkey, shown on their dashboard.
       </p>
       <form onSubmit={handleSearch}>

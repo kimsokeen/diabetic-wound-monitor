@@ -72,7 +72,7 @@ export default function ChatPanel({ patientId, caregiverId, currentUserId, other
   }
 
   if (!patientId || !caregiverId) {
-    return <p className="text-slate-500 text-sm">Select a conversation to start chatting.</p>
+    return <p className="text-ink/50 text-sm">Select a conversation to start chatting.</p>
   }
 
   return (
@@ -80,9 +80,9 @@ export default function ChatPanel({ patientId, caregiverId, currentUserId, other
       <h3 className="font-semibold mb-3">Chat with {otherPersonName}</h3>
 
       <div className="flex-1 overflow-y-auto space-y-2 mb-3 pr-1">
-        {loading && <p className="text-sm text-slate-400">Loading messages...</p>}
+        {loading && <p className="text-sm text-ink/40">Loading messages...</p>}
         {!loading && messages.length === 0 && (
-          <p className="text-sm text-slate-400">No messages yet — say hello!</p>
+          <p className="text-sm text-ink/40">No messages yet — say hello!</p>
         )}
         {messages.map((msg) => {
           const isMine = msg.sender_id === currentUserId
@@ -90,11 +90,11 @@ export default function ChatPanel({ patientId, caregiverId, currentUserId, other
             <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
               <div
                 className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm ${
-                  isMine ? 'bg-brand-600 text-white rounded-br-sm' : 'bg-slate-100 text-slate-800 rounded-bl-sm'
+                  isMine ? 'bg-brand-600 text-white rounded-br-sm' : 'bg-paper text-ink rounded-bl-sm'
                 }`}
               >
                 {msg.content}
-                <div className={`text-[10px] mt-1 ${isMine ? 'text-brand-100' : 'text-slate-400'}`}>
+                <div className={`text-[10px] mt-1 ${isMine ? 'text-brand-100' : 'text-ink/40'}`}>
                   {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
               </div>
@@ -106,7 +106,7 @@ export default function ChatPanel({ patientId, caregiverId, currentUserId, other
 
       <form onSubmit={sendMessage} className="flex gap-2">
         <input
-          className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="flex-1 px-3 py-2 border border-line rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
           placeholder="Type a message..."
           value={draft}
           onChange={(e) => setDraft(e.target.value)}

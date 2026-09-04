@@ -16,7 +16,7 @@ export default function HeroVideoDialog({ videoSrc, thumbnailSrc, thumbnailAlt =
 
   return (
     <div className={className}>
-      {title && <p className="text-sm font-medium text-slate-700 mb-2">{title}</p>}
+      {title && <p className="text-sm font-medium text-ink/80 mb-2">{title}</p>}
 
       <div className="relative cursor-pointer group max-w-xs" onClick={() => setIsOpen(true)}>
         <img

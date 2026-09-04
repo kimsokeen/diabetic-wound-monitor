@@ -18,7 +18,7 @@ export default function AnimatedTabs({ tabs, activeTab, onChange, layoutId = 'ac
             onClick={() => onChange(tab)}
             whileTap={{ scale: 0.96 }}
             className={`relative px-4 py-2 rounded-lg text-sm font-medium ${
-              isActive ? 'text-white' : 'bg-white border border-slate-200 text-slate-600'
+              isActive ? 'text-white' : 'bg-white border border-line text-ink/60'
             }`}
           >
             {isActive && (

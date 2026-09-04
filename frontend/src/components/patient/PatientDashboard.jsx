@@ -18,26 +18,24 @@ export default function PatientDashboard() {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-white border-b px-6 py-4 flex justify-between items-center">
+      <header className="bg-white border-b border-line px-6 py-4 flex justify-between items-center">
         <div>
-          <h1 className="font-bold text-lg">Hi, {profile?.full_name}</h1>
-          <p className="text-xs text-slate-500">Patient dashboard</p>
+          <h1 className="font-display text-xl text-ink">Hi, {profile?.full_name}</h1>
+          <p className="text-xs text-ink/50">Patient dashboard</p>
         </div>
         <Button variant="secondary" onClick={signOut}>Log out</Button>
       </header>
 
       <div className="max-w-3xl mx-auto p-6">
-        <Card className="mb-6 bg-brand-50 border-brand-100">
-          <p className="text-sm text-slate-700">
+        <div className="mb-6 rounded-xl bg-brand-600 text-white px-5 py-4">
+          <p className="text-sm text-brand-100">
             Share these with your caregiver so they can follow your progress:
           </p>
-          <p className="text-sm mt-1">
-            <strong>Your ID:</strong> <code className="bg-white px-2 py-0.5 rounded border text-xs">{profile?.id}</code>
-          </p>
-          <p className="text-sm">
-            <strong>Your passkey:</strong> <code className="bg-white px-2 py-0.5 rounded border text-xs">{profile?.passkey}</code>
-          </p>
-        </Card>
+          <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-sm">
+            <p><span className="text-brand-100">ID</span> <code className="ml-1 bg-white/15 px-2 py-0.5 rounded text-xs">{profile?.id}</code></p>
+            <p><span className="text-brand-100">Passkey</span> <code className="ml-1 bg-white/15 px-2 py-0.5 rounded text-xs">{profile?.passkey}</code></p>
+          </div>
+        </div>
 
         <AnimatedTabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} layoutId="patient-tab-pill" />
 

@@ -17,7 +17,7 @@ export default function CaregiverDashboard() {
       <header className="bg-white border-b px-6 py-4 flex justify-between items-center">
         <div>
           <h1 className="font-bold text-lg">Hi, {profile?.full_name}</h1>
-          <p className="text-xs text-slate-500">Caregiver dashboard</p>
+          <p className="text-xs text-ink/50">Caregiver dashboard</p>
         </div>
         <Button variant="secondary" onClick={signOut}>Log out</Button>
       </header>
@@ -39,7 +39,7 @@ export default function CaregiverDashboard() {
         <div className="col-span-2">
           {!selectedPatient.id ? (
             <Card>
-              <p className="text-slate-500 text-sm">Select a patient to view their progress or chat with them.</p>
+              <p className="text-ink/50 text-sm">Select a patient to view their progress or chat with them.</p>
             </Card>
           ) : (
             <>
@@ -47,7 +47,7 @@ export default function CaregiverDashboard() {
                 <button
                   onClick={() => setView('history')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                    view === 'history' ? 'bg-brand-600 text-white' : 'bg-white border border-slate-200 text-slate-600'
+                    view === 'history' ? 'bg-brand-600 text-white' : 'bg-white border border-line text-ink/60'
                   }`}
                 >
                   {selectedPatient.name}'s history
@@ -55,7 +55,7 @@ export default function CaregiverDashboard() {
                 <button
                   onClick={() => setView('chat')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                    view === 'chat' ? 'bg-brand-600 text-white' : 'bg-white border border-slate-200 text-slate-600'
+                    view === 'chat' ? 'bg-brand-600 text-white' : 'bg-white border border-line text-ink/60'
                   }`}
                 >
                   Chat

@@ -4,8 +4,8 @@ export function Button({ children, variant = 'primary', className = '', disabled
   const base = 'px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed'
   const variants = {
     primary: 'bg-brand-600 text-white hover:bg-brand-700',
-    secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50',
-    danger: 'bg-red-600 text-white hover:bg-red-700',
+    secondary: 'bg-white text-ink border border-line hover:bg-brand-50',
+    danger: 'bg-clay-600 text-white hover:bg-clay-500',
   }
   return (
     <motion.button
@@ -24,9 +24,9 @@ export function Button({ children, variant = 'primary', className = '', disabled
 export function Input({ label, ...props }) {
   return (
     <label className="block mb-4">
-      {label && <span className="block text-sm font-medium text-slate-700 mb-1">{label}</span>}
+      {label && <span className="block text-sm font-medium text-ink/80 mb-1">{label}</span>}
       <input
-        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+        className="w-full px-3 py-2 border border-line rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
         {...props}
       />
     </label>
@@ -34,12 +34,12 @@ export function Input({ label, ...props }) {
 }
 
 export function Card({ children, className = '' }) {
-  return <div className={`bg-white rounded-xl shadow-sm border border-slate-200 p-6 ${className}`}>{children}</div>
+  return <div className={`bg-white rounded-xl border border-line p-6 ${className}`}>{children}</div>
 }
 
 export function ErrorText({ children }) {
   if (!children) return null
-  return <p className="text-sm text-red-600 mb-4">{children}</p>
+  return <p className="text-sm text-clay-600 mb-4">{children}</p>
 }
 
 export function Spinner() {

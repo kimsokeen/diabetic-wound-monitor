@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
 import { Button, Card } from '../shared/UI'
+import AnimatedTabs from '../shared/AnimatedTabs'
 import PatientSearch from './PatientSearch'
 import PatientList from './PatientList'
 import SubmissionHistory from '../patient/SubmissionHistory'
@@ -12,11 +14,15 @@ export default function CaregiverDashboard() {
   const [selectedPatient, setSelectedPatient] = useState({ id: null, name: null })
   const [view, setView] = useState('history') // 'history' | 'chat'
 
+  const historyLabel = `${selectedPatient.name}'s history`
+  const tabs = [historyLabel, 'Chat']
+  const activeTabLabel = view === 'history' ? historyLabel : 'Chat'
+
   return (
     <div className="min-h-screen">
-      <header className="bg-white border-b px-6 py-4 flex justify-between items-center">
+      <header className="bg-white border-b border-line px-6 py-4 flex justify-between items-center">
         <div>
-          <h1 className="font-bold text-lg">Hi, {profile?.full_name}</h1>
+          <h1 className="font-display text-xl text-ink">Hi, {profile?.full_name}</h1>
           <p className="text-xs text-ink/50">Caregiver dashboard</p>
         </div>
         <Button variant="secondary" onClick={signOut}>Log out</Button>
@@ -43,36 +49,34 @@ export default function CaregiverDashboard() {
             </Card>
           ) : (
             <>
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => setView('history')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                    view === 'history' ? 'bg-brand-600 text-white' : 'bg-white border border-line text-ink/60'
-                  }`}
-                >
-                  {selectedPatient.name}'s history
-                </button>
-                <button
-                  onClick={() => setView('chat')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                    view === 'chat' ? 'bg-brand-600 text-white' : 'bg-white border border-line text-ink/60'
-                  }`}
-                >
-                  Chat
-                </button>
-              </div>
+              <AnimatedTabs
+                tabs={tabs}
+                activeTab={activeTabLabel}
+                onChange={(label) => setView(label === historyLabel ? 'history' : 'chat')}
+                layoutId="caregiver-tab-pill"
+              />
 
-              {view === 'history' && <SubmissionHistory patientId={selectedPatient.id} />}
-              {view === 'chat' && (
-                <Card>
-                  <ChatPanel
-                    patientId={selectedPatient.id}
-                    caregiverId={profile?.id}
-                    currentUserId={profile?.id}
-                    otherPersonName={selectedPatient.name}
-                  />
-                </Card>
-              )}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={view}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  {view === 'history' && <SubmissionHistory patientId={selectedPatient.id} />}
+                  {view === 'chat' && (
+                    <Card>
+                      <ChatPanel
+                        patientId={selectedPatient.id}
+                        caregiverId={profile?.id}
+                        currentUserId={profile?.id}
+                        otherPersonName={selectedPatient.name}
+                      />
+                    </Card>
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </>
           )}
         </div>

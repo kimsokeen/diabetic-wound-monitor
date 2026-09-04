@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
 import { Button, Card } from '../shared/UI'
+import AnimatedTabs from '../shared/AnimatedTabs'
 import UploadPhoto from './UploadPhoto'
 import SubmissionHistory from './SubmissionHistory'
 import CaregiverList from './CaregiverList'
@@ -37,46 +39,44 @@ export default function PatientDashboard() {
           </p>
         </Card>
 
-        <div className="flex gap-2 mb-6">
-          {TABS.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                activeTab === tab ? 'bg-brand-600 text-white' : 'bg-white border border-slate-200 text-slate-600'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+        <AnimatedTabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} layoutId="patient-tab-pill" />
 
-        {activeTab === 'Upload' && (
-          <UploadPhoto onNewSubmission={() => setRefreshKey((k) => k + 1)} />
-        )}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+          >
+            {activeTab === 'Upload' && (
+              <UploadPhoto onNewSubmission={() => setRefreshKey((k) => k + 1)} />
+            )}
 
-        {activeTab === 'History' && <SubmissionHistory patientId={profile?.id} refreshKey={refreshKey} />}
+            {activeTab === 'History' && <SubmissionHistory patientId={profile?.id} refreshKey={refreshKey} />}
 
-        {activeTab === 'Talk to caregiver' && (
-          <div className="grid grid-cols-3 gap-4">
-            <Card className="col-span-1">
-              <h3 className="font-semibold mb-2 text-sm">Your caregivers</h3>
-              <CaregiverList
-                patientId={profile?.id}
-                selectedCaregiverId={selectedCaregiver.id}
-                onSelect={(id, name) => setSelectedCaregiver({ id, name })}
-              />
-            </Card>
-            <Card className="col-span-2">
-              <ChatPanel
-                patientId={profile?.id}
-                caregiverId={selectedCaregiver.id}
-                currentUserId={profile?.id}
-                otherPersonName={selectedCaregiver.name}
-              />
-            </Card>
-          </div>
-        )}
+            {activeTab === 'Talk to caregiver' && (
+              <div className="grid grid-cols-3 gap-4">
+                <Card className="col-span-1">
+                  <h3 className="font-semibold mb-2 text-sm">Your caregivers</h3>
+                  <CaregiverList
+                    patientId={profile?.id}
+                    selectedCaregiverId={selectedCaregiver.id}
+                    onSelect={(id, name) => setSelectedCaregiver({ id, name })}
+                  />
+                </Card>
+                <Card className="col-span-2">
+                  <ChatPanel
+                    patientId={profile?.id}
+                    caregiverId={selectedCaregiver.id}
+                    currentUserId={profile?.id}
+                    otherPersonName={selectedCaregiver.name}
+                  />
+                </Card>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   )

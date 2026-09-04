@@ -1,4 +1,6 @@
-export function Button({ children, variant = 'primary', className = '', ...props }) {
+import { motion } from 'framer-motion'
+
+export function Button({ children, variant = 'primary', className = '', disabled, ...props }) {
   const base = 'px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed'
   const variants = {
     primary: 'bg-brand-600 text-white hover:bg-brand-700',
@@ -6,9 +8,16 @@ export function Button({ children, variant = 'primary', className = '', ...props
     danger: 'bg-red-600 text-white hover:bg-red-700',
   }
   return (
-    <button className={`${base} ${variants[variant]} ${className}`} {...props}>
+    <motion.button
+      whileTap={!disabled ? { scale: 0.96 } : undefined}
+      whileHover={!disabled ? { scale: 1.02 } : undefined}
+      transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+      className={`${base} ${variants[variant]} ${className}`}
+      disabled={disabled}
+      {...props}
+    >
       {children}
-    </button>
+    </motion.button>
   )
 }
 

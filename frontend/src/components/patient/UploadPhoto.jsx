@@ -1,6 +1,12 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { supabase, BACKEND_URL, getSignedImageUrl } from '../../lib/supabaseClient'
 import { Button, Card, ErrorText, Spinner } from '../shared/UI'
+import HeroVideoDialog from '../shared/HeroVideoDialog'
+
+// Mayo Clinic's short, credible foot-care video — shown after analysis to
+// help patients reduce their risk of the wound worsening.
+const CHRONIC_RISK_VIDEO_ID = 'SulNOSMMNLY'
 
 export default function UploadPhoto({ onNewSubmission }) {
   const [file, setFile] = useState(null)
@@ -72,16 +78,28 @@ export default function UploadPhoto({ onNewSubmission }) {
       {loading && <Spinner />}
 
       {result && (
-        <div className="mt-6 p-4 bg-slate-50 rounded-lg border">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mt-6 p-4 bg-slate-50 rounded-lg border"
+        >
           <h3 className="font-medium mb-2">Results</h3>
           <p className="text-sm mb-2">
             Wound area: <strong>{result.wound_area_percent}%</strong> of the photo
           </p>
 
           {result.maskSignedUrl && (
-            <img src={result.maskSignedUrl} alt="Segmentation overlay" className="w-48 h-48 object-cover rounded-lg mb-3 border" />
+            <img src={result.maskSignedUrl} alt="Segmentation overlay" className="w-48 h-48 object-cover rounded-lg mb-4 border" />
           )}
-        </div>
+
+          <HeroVideoDialog
+            title="How to reduce chronic risk"
+            videoSrc={`https://www.youtube.com/embed/${CHRONIC_RISK_VIDEO_ID}`}
+            thumbnailSrc={`https://img.youtube.com/vi/${CHRONIC_RISK_VIDEO_ID}/hqdefault.jpg`}
+            thumbnailAlt="Diabetic foot care video thumbnail"
+          />
+        </motion.div>
       )}
     </Card>
   )

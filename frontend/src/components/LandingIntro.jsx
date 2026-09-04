@@ -49,8 +49,8 @@ export default function LandingIntro({ name, onComplete }) {
               <p className="mx-auto mt-6 max-w-lg text-base leading-7 text-white/80 sm:text-lg">
                 Get your wound monitored every day at home.
               </p>
-              <p className="mx-auto mt-6 max-w-lg text-base leading-7 text-white/80 sm:text-lg">
-                This project is made by Warat Mekasuwandumrong, Keen and Nawat Suangburanakul, Holmes. This project is a part of a hackathon and for medical use, please consult your doctor for any medical advice.
+              <p className="mx-auto mt-6 max-w-lg text-xs leading-5 text-white/65 sm:text-sm sm:leading-6">
+                This project is made by Warat Mekasuwandumrong, Keen and Nawat Suangburanakul, Holmes. This project is an idea for a hackathon only. For medical use, please consult your doctor for any medical advice.
               </p>
               <button
                 type="button"

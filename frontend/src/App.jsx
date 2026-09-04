@@ -4,15 +4,27 @@ import PatientDashboard from './components/patient/PatientDashboard'
 import CaregiverDashboard from './components/caregiver/CaregiverDashboard'
 import LandingIntro from './components/LandingIntro'
 import { Spinner } from './components/shared/UI'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function AppContent() {
   const { session, profile, loading } = useAuth()
   const [showLanding, setShowLanding] = useState(false)
+  const shownForUserRef = useRef(null)
 
   useEffect(() => {
-    setShowLanding(Boolean(session && profile))
-  }, [session, profile])
+    const userId = session?.user?.id
+
+    if (!userId || !profile) {
+      shownForUserRef.current = null
+      setShowLanding(false)
+      return
+    }
+
+    if (shownForUserRef.current === userId) return
+
+    shownForUserRef.current = userId
+    setShowLanding(true)
+  }, [session?.user?.id, profile])
 
   if (loading) {
     return (
